@@ -1,5 +1,4 @@
-import { type } from "os";
-import React, { useEffect, useReducer } from "react";
+import {  useReducer } from "react";
 
 interface AuthState {
   validando: boolean;
@@ -9,16 +8,23 @@ interface AuthState {
 }
 
 const initialState = {
-  validando: true,
+  validando: false,
   token: null,
   username: "",
   nombre: "",
 };
-type AuthAction = {
-  type: "logout";
-};
 
-const authReducer = (state: AuthState, action: AuthAction): AuthState => {
+type LoginPayload = {
+  username: string;
+  nombre: string;
+}
+
+type AuthAction = 
+  | { type: 'logout' }
+  | { type: 'login', payload: LoginPayload }
+  | { type: 'startValidation' };  // Nuevo tipo de acción
+
+function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
     case "logout":
       return {
@@ -27,22 +33,51 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         username: "",
         nombre: "",
       };
+    
+    case 'login':
+      const {nombre, username} = action.payload;
+      return {
+        validando: false,
+        token: 'xdxdxd',
+        nombre,
+        username
+      };
+
+    case 'startValidation':  // Manejar la nueva acción
+      return {
+        ...state,
+        validando: true
+      };
 
     default:
       return state;
   }
-};
+}
 
 const Login = () => {
-  const [state, dispatch] = useReducer(authReducer, initialState);
+  const [{ validando, token, nombre }, dispatch] = useReducer(authReducer, initialState);
 
-  useEffect(() => {
+  const login = () => {
+    dispatch({ type: 'startValidation' }); 
     setTimeout(() => {
-      dispatch({ type: "logout" });
+      dispatch({
+        type: 'login',
+        payload: {
+          nombre: 'Dani',
+          username: 'Drako'
+        }
+      });
     }, 1500);
-  }, []);
+  }
 
-  if (state.validando) {
+  const logout = () => {
+    dispatch({ type: 'startValidation' }); 
+    setTimeout(() => {
+      dispatch({ type: 'logout' });
+    }, 1500);
+  }
+
+  if (validando) {
     return (
       <>
         <div className="alert alert-info">Validando...</div>
@@ -54,13 +89,18 @@ const Login = () => {
     <>
       <h3>Login</h3>
 
-      <div className="alert alert-danger">No autenticado</div>
-
-      <div className="alert alert-success">Autenticado</div>
-
-      <button className="btn btn-primary">Login</button>
-
-      <button className="btn btn-danger">Logout</button>
+      {
+        (token)
+          ? <>
+              <div className="alert alert-success">Autenticado como {nombre} </div>
+              <button className="btn btn-danger" onClick={logout}>Logout</button>
+            </>
+          : 
+            <>
+              <div className="alert alert-danger">No autenticado</div>
+              <button className="btn btn-primary" onClick={login}>Login</button>
+            </>
+      }
     </>
   );
 };
