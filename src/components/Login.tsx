@@ -1,4 +1,4 @@
-import {  useReducer } from "react";
+import { useReducer } from "react";
 
 interface AuthState {
   validando: boolean;
@@ -17,12 +17,12 @@ const initialState = {
 type LoginPayload = {
   username: string;
   nombre: string;
-}
+};
 
-type AuthAction = 
-  | { type: 'logout' }
-  | { type: 'login', payload: LoginPayload }
-  | { type: 'startValidation' };  // Nuevo tipo de acción
+type AuthAction =
+  | { type: "logout" }
+  | { type: "login"; payload: LoginPayload }
+  | { type: "startValidation" }; // Nuevo tipo de acción
 
 function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
@@ -33,20 +33,20 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         username: "",
         nombre: "",
       };
-    
-    case 'login':
-      const {nombre, username} = action.payload;
+
+    case "login":
+      const { nombre, username } = action.payload;
       return {
         validando: false,
-        token: 'xdxdxd',
+        token: "xdxdxd",
         nombre,
-        username
+        username,
       };
 
-    case 'startValidation':  // Manejar la nueva acción
+    case "startValidation": // Manejar la nueva acción
       return {
         ...state,
-        validando: true
+        validando: true,
       };
 
     default:
@@ -55,27 +55,30 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 }
 
 const Login = () => {
-  const [{ validando, token, nombre }, dispatch] = useReducer(authReducer, initialState);
+  const [{ validando, token, nombre }, dispatch] = useReducer(
+    authReducer,
+    initialState
+  );
 
   const login = () => {
-    dispatch({ type: 'startValidation' }); 
+    dispatch({ type: "startValidation" });
     setTimeout(() => {
       dispatch({
-        type: 'login',
+        type: "login",
         payload: {
-          nombre: 'Dani',
-          username: 'Drako'
-        }
+          nombre: "Dani",
+          username: "Drako",
+        },
       });
     }, 1500);
-  }
+  };
 
   const logout = () => {
-    dispatch({ type: 'startValidation' }); 
+    dispatch({ type: "startValidation" });
     setTimeout(() => {
-      dispatch({ type: 'logout' });
+      dispatch({ type: "logout" });
     }, 1500);
-  }
+  };
 
   if (validando) {
     return (
@@ -89,18 +92,21 @@ const Login = () => {
     <>
       <h3>Login</h3>
 
-      {
-        (token)
-          ? <>
-              <div className="alert alert-success">Autenticado como {nombre} </div>
-              <button className="btn btn-danger" onClick={logout}>Logout</button>
-            </>
-          : 
-            <>
-              <div className="alert alert-danger">No autenticado</div>
-              <button className="btn btn-primary" onClick={login}>Login</button>
-            </>
-      }
+      {token ? (
+        <>
+          <div className="alert alert-success">Autenticado como {nombre} </div>
+          <button className="btn btn-danger" onClick={logout}>
+            Logout
+          </button>
+        </>
+      ) : (
+        <>
+          <div className="alert alert-danger">No autenticado</div>
+          <button className="btn btn-primary" onClick={login}>
+            Login
+          </button>
+        </>
+      )}
     </>
   );
 };
