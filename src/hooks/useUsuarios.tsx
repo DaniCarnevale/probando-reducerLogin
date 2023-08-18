@@ -16,7 +16,7 @@ export const useUsuarios = () => {
         page: paginaRef.current,
       },
     });
-    if (resp.data.data.length > 0) {
+    if (resp.data.data.length > 0 && paginaRef.current < 3) {
       setUsuarios(resp.data.data);
     } else {
       paginaRef.current --;
